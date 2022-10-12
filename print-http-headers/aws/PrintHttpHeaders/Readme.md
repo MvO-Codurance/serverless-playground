@@ -10,52 +10,53 @@ For more information about how the Amazon.Lambda.AspNetCoreServer package works 
 Lambda function handler value is set to the .NET Assembly name. This is different then deploying as a class library where the function handler string includes the assembly, type and method name.
 
 To deploy as an executable assembly the Lambda runtime client must be started to listen for incoming events to process. For an ASP.NET Core application the Lambda runtime client is started by included the
-`Amazon.Lambda.AspNetCoreServer.Hosting` NuGet package and calling `AddAWSLambdaHosting(LambdaEventSource.HttpApi)` passing in the event source while configuring the services of the application. The
+`Amazon.Lambda.AspNetCoreServer.Hosting` NuGet package and calling `AddAWSLambdaHosting(LambdaEventSource.RestApi)` passing in the event source while configuring the services of the application. The
 event source can be API Gateway REST API and HTTP API or Application Load Balancer.  
 
 ## Project Files
 
-* serverless.template - an AWS CloudFormation Serverless Application Model template file for declaring your Serverless functions and other AWS resources
-* aws-lambda-tools-defaults.json - default argument settings for use with Visual Studio and command line deployment tools for AWS
-* Program.cs - entry point to the application that contains all of the top level statements initializing the ASP.NET Core application.
+* `Program.cs` - entry point to the application that contains all of the top level statements initializing the ASP.NET Core application.
 The call to `AddAWSLambdaHosting` configures the application to work in Lambda when it detects Lambda is the executing environment. 
-* Controllers\CalculatorController - example Web API controller
+* `Controllers\CalculatorController.cs` - example Web API controller
+* `main.tf` - the main TerraForm file which contains statements to deploy the Lambda function and API Gateway
+* `variables.tf` - the TerraForm inputs definition file (change these to alter the names of the created AWS resources)
+* `outputs.tf` - the TerraForm outputs definition file (defines what information is output to the console after deployment completes)
 
-## Get started from the command line:
+## Pre-requisites
 
-Once you have edited your template and code you can deploy your application using the [Amazon.Lambda.Tools Global Tool](https://github.com/aws/aws-extensions-for-dotnet-cli#aws-lambda-amazonlambdatools) from the command line.
+Ensure you have the following:
+* The [Terraform CLI](/tutorials/terraform/install-cli?in=terraform/aws-get-started) (1.3.2+) installed.
+* [An AWS account](https://aws.amazon.com/free/).
+* The [AWS CLI (2.0+)](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed, and [configured for your AWS account](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html#cli-configure-quickstart-config).
 
-Install Amazon.Lambda.Tools Global Tools if not already installed.
+## To deploy the application
+Open a **Powershell** prompt at the project folder, i.e. the folder than contains the `main.tf` file.
+
+Build/publish the application:
 ```
-    dotnet tool install -g Amazon.Lambda.Tools
+./publish.ps1
 ```
 
-If already installed check if new version is available.
+Initialise TerraForm:
 ```
-    dotnet tool update -g Amazon.Lambda.Tools
+terraform init
 ```
 
-### To deploy the application
-Create an S3 bucket named `print-http-headers`:
+View the deployment plan:
 ```
-    aws s3 mb s3://print-http-headers
+terraform plan
 ```
 
 Deploy the application:
 ```
-    dotnet lambda deploy-serverless
+terraform apply
 ```
-When prompted, enter `print-http-headers` for the Cloud Formation stack name and the S3 bucket name.
+When prompted, enter `yes` to confirm the deployment.
 
-### To delete the application
-Delete the application:
-```
-    dotnet lambda delete-serverless
-```
-When prompted, enter `print-http-headers` for the Cloud Formation stack name.
+Once complete, copy/paste the `api_gateway_base_url` output value from the console into your browser.
 
-Empty and delete the S3 bucket named `print-http-headers`:
+## To delete the application
 ```
-    aws s3 rm s3://print-http-headers --recursive
-    aws s3 rb s3://print-http-headers
+terraform destroy
 ```
+When prompted, enter `yes` to confirm the deletion.

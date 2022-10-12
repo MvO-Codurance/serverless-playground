@@ -12,8 +12,10 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.MapControllers();
 
-app.MapGet("/", async context =>
+app.MapGet("/", async (HttpContext context, ILogger<Program> logger) =>
 {
+    logger.LogInformation("GET request for / from remote IP {RemoteIpAddress}", context.Connection.RemoteIpAddress);
+    
     // request headers
     await context.Response.WriteAsync("REQUEST HEADERS:\n");
     foreach (var requestHeader in context.Request.Headers)

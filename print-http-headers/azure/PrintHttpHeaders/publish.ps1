@@ -1,1 +1,1 @@
-dotnet publish --configuration Release --runtime linux-x64 --self-contained true --output "bin/publish"
+dotnet publish --configuration Release --runtime linux-x64 --no-self-contained --output "bin/publish"

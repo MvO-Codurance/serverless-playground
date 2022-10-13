@@ -104,31 +104,3 @@ resource "azurerm_linux_function_app" "function_app" {
     "WEBSITE_RUN_FROM_PACKAGE" = "https://${azurerm_storage_account.storage_account.name}.blob.core.windows.net/${azurerm_storage_container.storage_container.name}/${azurerm_storage_blob.storage_blob.name}${data.azurerm_storage_account_blob_container_sas.storage_account_blob_container_sas.sas}"
   }
 }
-
-/*
-resource "azurerm_function_app" "function_app" {
-  name                       = var.function_app_name
-  resource_group_name        = azurerm_resource_group.resource_group.name
-  location                   = var.az_region
-  app_service_plan_id        = azurerm_service_plan.app_service_plan.id
-  app_settings = {
-    "WEBSITE_RUN_FROM_PACKAGE" = "https://${azurerm_storage_account.storage_account.name}.blob.core.windows.net/${azurerm_storage_container.storage_container.name}/${azurerm_storage_blob.storage_blob.name}${data.azurerm_storage_account_blob_container_sas.storage_account_blob_container_sas.sas}",
-    "FUNCTIONS_WORKER_RUNTIME" = "dotnet",
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.application_insights.instrumentation_key,
-  }
-  os_type = "linux"
-  site_config {
-    linux_fx_version          = "DOTNET|6.0"
-    use_32_bit_worker_process = true
-  }
-  storage_account_name       = azurerm_storage_account.storage_account.name
-  storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
-  version                    = "~4"
-
-  lifecycle {
-    ignore_changes = [
-      app_settings["WEBSITE_RUN_FROM_PACKAGE"],
-    ]
-  }
-}
-*/

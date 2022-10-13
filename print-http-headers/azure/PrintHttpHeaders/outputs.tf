@@ -1,10 +1,9 @@
-/*
-output "function_name" {
-  description = "Name of the Lambda function."
-  value       = aws_lambda_function.lambda_function.function_name
+output "function_app_name" {
+  value       = azurerm_linux_function_app.function_app.name
+  description = "Deployed function app name"
 }
 
-output "api_gateway_base_url" {
-  value = aws_api_gateway_deployment.api-deployment.invoke_url
+output "function_app_url" {
+  value       = "http://${azurerm_linux_function_app.function_app.default_hostname}/api/root"
+  description = "Deployed function app hostname"
 }
-*/

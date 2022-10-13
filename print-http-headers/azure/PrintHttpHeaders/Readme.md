@@ -32,10 +32,13 @@ Ensure you have the following:
 
 ## To deploy the application
 Open a **Powershell** prompt at the project folder, i.e. the folder than contains the `main.tf` file.
+
+Log in to your Azure account:
 ```
 az login
 ```
-Log in to your Azure account using the browser that is opened. Close the browser.
+Using the browser that is opened to authenticate. Your `~/.azure` profile will be updated with the required authentication tokens. 
+Close the browser.
 
 Build/publish the application:
 ```
@@ -58,7 +61,7 @@ terraform apply
 ```
 When prompted, enter `yes` to confirm the deployment.
 
-Once complete, copy/paste the `api_gateway_base_url` output value from the console into your browser.
+Once complete, copy/paste the `function_app_url` output value from the console into your browser.
 
 ## To delete the application
 ```

@@ -12,20 +12,21 @@ await host.RunAsync();
 
 public class Functions
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<Functions> _logger;
 
-    public Functions(ILoggerFactory loggerFactory)
+    public Functions(ILogger<Functions> logger)
     {
-        _logger = loggerFactory.CreateLogger<Functions>();
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     
-    [Function("root")]
+    [Function(nameof(Root))]
     public async Task<HttpResponseData> Root(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData request)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData request,
+        FunctionContext executionContext)
     {
         var response = request.CreateResponse(HttpStatusCode.OK);
         var remoteIpAddress = "** REMOTE IP ADDRESS **";
-        
+
         _logger.LogInformation("GET request for / from remote IP {RemoteIpAddress}", remoteIpAddress);
         
         // request headers

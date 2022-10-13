@@ -458,5 +458,5 @@ $RECYCLE.BIN/
 ##
 .terraform/
 *.tfstate
-*.tfstate.backup
+*.tfstate.*
 *.lock.hcl

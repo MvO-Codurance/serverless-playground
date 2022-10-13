@@ -24,10 +24,19 @@ public class Functions
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData request,
         FunctionContext executionContext)
     {
-        var response = request.CreateResponse(HttpStatusCode.OK);
-        var remoteIpAddress = "** REMOTE IP ADDRESS **";
-
+        /*
+            HttpRequestData is not the real HttpRequest that the Functions runtime received.
+            There is no HttpRequest.Connection.RemoteIpAddress property so we use the X-Forwarded-For header.
+            This header seems to hold the client IP address plus a port number (something to do with the Functions 
+            hosting/runtime) so we strip off the port number.
+            All this works when in Azure, but not when running locally. 
+        */
+        request.Headers.TryGetValues("X-Forwarded-For", out var xForwardedForValues);
+        var remoteIpAddress = (xForwardedForValues?.FirstOrDefault() ?? string.Empty).Split(":").FirstOrDefault();
+        
         _logger.LogInformation("GET request for / from remote IP {RemoteIpAddress}", remoteIpAddress);
+        
+        var response = request.CreateResponse(HttpStatusCode.OK);
         
         // request headers
         await response.WriteStringAsync("REQUEST HEADERS:\n");

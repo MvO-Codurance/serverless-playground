@@ -104,3 +104,34 @@ resource "azurerm_linux_function_app" "function_app" {
     "WEBSITE_RUN_FROM_PACKAGE" = "https://${azurerm_storage_account.storage_account.name}.blob.core.windows.net/${azurerm_storage_container.storage_container.name}/${azurerm_storage_blob.storage_blob.name}${data.azurerm_storage_account_blob_container_sas.storage_account_blob_container_sas.sas}"
   }
 }
+
+resource "azurerm_cosmosdb_account" "cosmos_account" {
+  name                      = "${var.app_name}-cosmos-account"
+  location                  = var.az_region
+  resource_group_name       = azurerm_resource_group.resource_group.name
+  offer_type                = "Standard"
+  kind                      = "GlobalDocumentDB"
+  enable_free_tier          = true
+  enable_automatic_failover = false
+  consistency_policy {
+    consistency_level = "Session"
+  }
+  geo_location {
+    location          = var.az_region
+    failover_priority = 0
+  }
+}
+
+resource "azurerm_cosmosdb_sql_database" "cosmos_db" {
+  name                = "${var.app_name}-cosmos-db"
+  resource_group_name = azurerm_resource_group.resource_group.name
+  account_name        = azurerm_cosmosdb_account.cosmos_account.name
+}
+
+resource "azurerm_cosmosdb_sql_container" "cosmos_container" {
+  name                = "logged-headers"
+  resource_group_name = azurerm_resource_group.resource_group.name
+  account_name        = azurerm_cosmosdb_account.cosmos_account.name
+  database_name       = azurerm_cosmosdb_sql_database.cosmos_db.name
+  partition_key_path  = "/id"
+}

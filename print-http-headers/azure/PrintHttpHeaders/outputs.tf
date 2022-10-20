@@ -5,5 +5,5 @@ output "function_app_name" {
 
 output "function_app_url" {
   value       = "http://${azurerm_linux_function_app.function_app.default_hostname}/api/root"
-  description = "Deployed function app hostname"
+  description = "Deployed function app url"
 }

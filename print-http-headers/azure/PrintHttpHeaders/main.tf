@@ -22,12 +22,12 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "resource_group" {
-  name     = var.rg_name
+  name     = "${var.app_name}-rg"
   location = var.az_region
 }
 
 resource "azurerm_storage_account" "storage_account" {
-  name                     = var.storage_account_name
+  name                     = "${replace(var.app_name, "-", "")}storage"
   resource_group_name      = azurerm_resource_group.resource_group.name
   location                 = var.az_region
   account_tier             = "Standard"
@@ -42,16 +42,16 @@ resource "azurerm_storage_container" "storage_container" {
 
 data "archive_file" "archive_file" {
   type        = "zip"
-  source_dir  = var.binaries_publish_path
-  output_path = var.binaries_zip_path
+  source_dir  = "bin/publish"
+  output_path = "bin/${var.app_name}.zip"
 }
 
 resource "azurerm_storage_blob" "storage_blob" {
-  name                   = "${filesha256(var.binaries_zip_path)}.zip"
+  name                   = "${filesha256(data.archive_file.archive_file.output_path)}.zip"
   storage_account_name   = azurerm_storage_account.storage_account.name
   storage_container_name = azurerm_storage_container.storage_container.name
   type                   = "Block"
-  source                 = var.binaries_zip_path
+  source                 = data.archive_file.archive_file.output_path
 }
 
 data "azurerm_storage_account_blob_container_sas" "storage_account_blob_container_sas" {
@@ -70,14 +70,14 @@ data "azurerm_storage_account_blob_container_sas" "storage_account_blob_containe
 }
 
 resource "azurerm_application_insights" "application_insights" {
-  name                = var.application_insights_name
+  name                = "${var.app_name}-application-insights"
   location            = var.az_region
   resource_group_name = azurerm_resource_group.resource_group.name
   application_type    = "web"
 }
 
 resource "azurerm_service_plan" "app_service_plan" {
-  name                = var.app_service_plan_name
+  name                = "${var.app_name}-service-plan"
   resource_group_name = azurerm_resource_group.resource_group.name
   location            = var.az_region
   os_type             = "Linux"
@@ -85,7 +85,7 @@ resource "azurerm_service_plan" "app_service_plan" {
 }
 
 resource "azurerm_linux_function_app" "function_app" {
-  name                       = var.function_app_name
+  name                       = "${var.app_name}-function-app"
   resource_group_name        = azurerm_resource_group.resource_group.name
   location                   = var.az_region
   storage_account_name       = azurerm_storage_account.storage_account.name

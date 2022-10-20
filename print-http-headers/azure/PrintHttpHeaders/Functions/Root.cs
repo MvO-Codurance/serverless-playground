@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using PrintHttpHeaders.Models;
 
 namespace PrintHttpHeaders.Functions;
 
@@ -15,7 +16,7 @@ public class Root
     }
     
     [Function(nameof(Root))]
-    public async Task<HttpResponseData> Run(
+    public async Task<HeadersOutputType> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData request)
     {
         /*
@@ -47,6 +48,10 @@ public class Root
             await response.WriteStringAsync($"{responseHeader.Key} = {string.Join(", ", responseHeader.Value)}\n");
         }
 
-        return response;
+        return new HeadersOutputType
+        {
+            RequestResponseHeaders = new RequestResponseHeaders(request.Headers, response.Headers),
+            Response = response
+        };
     }
 }

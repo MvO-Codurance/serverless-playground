@@ -460,3 +460,8 @@ $RECYCLE.BIN/
 *.tfstate
 *.tfstate.*
 *.lock.hcl
+
+##
+## Azure Functions
+##
+local.settings.json

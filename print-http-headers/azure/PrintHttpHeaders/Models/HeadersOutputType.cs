@@ -5,7 +5,13 @@ namespace PrintHttpHeaders.Models;
 
 public class HeadersOutputType
 {
-    [CosmosDBOutput("%DatabaseName%", "%CollectionName%", ConnectionStringSetting = "CosmosDbConnectionString")]
-    public RequestResponseHeaders RequestResponseHeaders { get; set; }
-    public HttpResponseData Response { get; set; }
+    [CosmosDBOutput("%CosmosDatabaseName%", "%CosmosContainerName%", ConnectionStringSetting = "CosmosDbConnectionString")]
+    public RequestResponseHeaders RequestResponseHeaders { get; }
+    public HttpResponseData Response { get; }
+
+    public HeadersOutputType(RequestResponseHeaders requestResponseHeaders, HttpResponseData response)
+    {
+        RequestResponseHeaders = requestResponseHeaders;
+        Response = response;
+    }
 }

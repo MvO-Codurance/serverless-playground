@@ -4,7 +4,6 @@ namespace PrintHttpHeaders.Models;
 
 public class RequestResponseHeaders
 {
-    public Guid Id => Guid.NewGuid();
     public HttpHeadersCollection RequestHeaders { get; }
     public HttpHeadersCollection ResponseHeaders { get; }
 

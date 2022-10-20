@@ -47,11 +47,10 @@ public class Root
         {
             await response.WriteStringAsync($"{responseHeader.Key} = {string.Join(", ", responseHeader.Value)}\n");
         }
-
-        return new HeadersOutputType
-        {
-            RequestResponseHeaders = new RequestResponseHeaders(request.Headers, response.Headers),
-            Response = response
-        };
+        
+        return new HeadersOutputType(
+            new RequestResponseHeaders(request.Headers, response.Headers),
+            response
+        );
     }
 }

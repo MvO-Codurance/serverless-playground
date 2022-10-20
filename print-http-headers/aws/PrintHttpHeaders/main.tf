@@ -18,7 +18,7 @@ provider "aws" {
   region = var.aws_region
   default_tags {
     tags = {
-      Application = var.lambda_function_name
+      Application = var.app_name
     }
   }
 }
@@ -26,21 +26,21 @@ provider "aws" {
 # lambda function 
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = var.binaries_publish_path
-  output_path = var.binaries_zip_path
+  source_dir  = "bin/publish"
+  output_path = "bin/${var.app_name}.zip"
 }
 
 resource "aws_lambda_function" "lambda_function" {
-  filename         = var.binaries_zip_path
-  function_name    = var.lambda_function_name
+  filename         = data.archive_file.lambda_zip.output_path
+  function_name    = "${var.app_name}_lambda"
   role             = aws_iam_role.iam_for_lambda_tf.arn
   handler          = var.lambda_handler_name
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  runtime          = var.lambda_runtime
+  runtime          = "dotnet6"
 }
 
 resource "aws_iam_role" "iam_for_lambda_tf" {
-  name               = var.lambda_iam_role_name
+  name               = "${var.app_name}_lambda_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -65,7 +65,7 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
 
 # API gateway
 resource "aws_api_gateway_rest_api" "api_gateway" {
-  name = var.api_gateway_name
+  name = "${var.app_name}_gateway"
 }
 
 resource "aws_api_gateway_resource" "proxy" {
@@ -112,7 +112,7 @@ resource "aws_api_gateway_deployment" "api-deployment" {
     aws_api_gateway_integration.lambda_root,
   ]
   rest_api_id = aws_api_gateway_rest_api.api_gateway.id
-  stage_name  = var.api_gateway_stage_name
+  stage_name  = "test"
 }
 
 resource "aws_lambda_permission" "api-gw" {

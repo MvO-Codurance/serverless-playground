@@ -2,12 +2,12 @@
 This project shows how to run an ASP.NET Core Azure Functions application.
 
 ## Project Files
-* `Program.cs` - entry point to the application that contains all of the top level statements initializing the ASP.NET Core application
-* `Functions\Root.cs` - the "root" function (although Azure Functions does not allow functions to sit at the root route) that displays HTTP request/response headers
-* `Functions\Calculator.cs` - the simple calculator functions to add/subtract/multiple/divide two integers
-* `main.tf` - the main TerraForm file which contains statements to deploy the FunctionApp
-* `variables.tf` - the TerraForm inputs definition file (change these to alter the names of the created Azure resources)
-* `outputs.tf` - the TerraForm outputs definition file (defines what information is output to the console after deployment completes)
+* `Program.cs` - entry point to the application that contains all of the top level statements initializing the ASP.NET Core application.
+* `Functions\Root.cs` - the "root" function (although Azure Functions does not allow functions to sit at the root route) that displays HTTP request/response headers. The headers are also stored in the deployed Cosmos database.
+* `Functions\Calculator.cs` - the simple calculator functions to add/subtract/multiple/divide two integers.
+* `main.tf` - the main TerraForm file which contains statements to deploy the FunctionApp.
+* `variables.tf` - the TerraForm inputs definition file (change these to alter the names of the created Azure resources).
+* `outputs.tf` - the TerraForm outputs definition file (defines what information is output to the console after deployment completes).
 
 ## Pre-requisites
 Ensure you have the following:
@@ -47,6 +47,17 @@ terraform apply
 When prompted, enter `yes` to confirm the deployment.
 
 Once complete, copy/paste the `function_app_url` output value from the console into your browser.
+
+## To run locally
+Once deployed, you can run the functions locally but connect to the deployed resources, i.e. the Cosmos database. 
+To do this you need a `local.settings.json` file. In the same Powershell prompt as above:
+```
+# get the encrypted appsettings for the function
+func azure functionapp fetch-app-settings 'print-http-headers-function-app' --output-file local.settings.json
+
+# decrypt the settings
+func settings decrypt
+```
 
 ## To delete the application
 ```

@@ -101,7 +101,10 @@ resource "azurerm_linux_function_app" "function_app" {
   }
   builtin_logging_enabled = false
   app_settings = {
-    "WEBSITE_RUN_FROM_PACKAGE" = "https://${azurerm_storage_account.storage_account.name}.blob.core.windows.net/${azurerm_storage_container.storage_container.name}/${azurerm_storage_blob.storage_blob.name}${data.azurerm_storage_account_blob_container_sas.storage_account_blob_container_sas.sas}"
+    "WEBSITE_RUN_FROM_PACKAGE" = "https://${azurerm_storage_account.storage_account.name}.blob.core.windows.net/${azurerm_storage_container.storage_container.name}/${azurerm_storage_blob.storage_blob.name}${data.azurerm_storage_account_blob_container_sas.storage_account_blob_container_sas.sas}",
+    "CosmosDbConnectionString": "AccountEndpoint=${azurerm_cosmosdb_account.cosmos_account.endpoint};AccountKey=${azurerm_cosmosdb_account.cosmos_account.primary_key};",
+    "CosmosDatabaseName": azurerm_cosmosdb_sql_database.cosmos_db.name,
+    "CosmosContainerName": azurerm_cosmosdb_sql_container.cosmos_container.name
   }
 }
 

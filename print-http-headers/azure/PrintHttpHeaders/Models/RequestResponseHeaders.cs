@@ -1,15 +1,21 @@
+using System.Text.Json.Serialization;
 using Microsoft.Azure.Functions.Worker.Http;
 
 namespace PrintHttpHeaders.Models;
 
 public class RequestResponseHeaders
 {
-    public HttpHeadersCollection RequestHeaders { get; }
-    public HttpHeadersCollection ResponseHeaders { get; }
+    public List<KeyValuePair<string, IEnumerable<string>>>? RequestHeaders { get; set; }
+    public List<KeyValuePair<string, IEnumerable<string>>>? ResponseHeaders { get; set; }
 
-    public RequestResponseHeaders(HttpHeadersCollection requestHeaders, HttpHeadersCollection responseHeaders)
+    [JsonConstructor]
+    public RequestResponseHeaders()
     {
-        RequestHeaders = requestHeaders;
-        ResponseHeaders = responseHeaders;
+    }
+    
+    public RequestResponseHeaders(HttpHeadersCollection requestHeaders,HttpHeadersCollection responseHeaders)
+    {
+        RequestHeaders = requestHeaders.ToList();
+        ResponseHeaders = responseHeaders.ToList();
     }
 }
